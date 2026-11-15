@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables / credentials
+.env
+.env.*
+!.env.example
+*.json
+!example_schema.json
+
+# GCP credentials
+*service-account*.json
+credentials/
+
+# Data files
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# DuckDB
+*.duckdb
+*.duckdb.wal
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+dbt/profiles.yml
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
