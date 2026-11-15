@@ -1,0 +1,15 @@
+# Data transformation
+dbt-duckdb
+dbt-bigquery
+duckdb
+
+# GCP ingestion
+google-cloud-bigquery
+google-cloud-storage
+
+# Development and testing
+pytest
+ruff
+
+# Dependency locking
+pip-tools
