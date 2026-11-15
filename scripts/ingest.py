@@ -1,3 +1,6 @@
+## Ingest from loan-data-pipeline/raw/* into duckdb tables.
+## raw_loans: all monthly source records appended together.
+## ingestion_log: tracks successfully loaded files and row counts, preventing duplicate ingestion.
 
 from argparse import ArgumentParser
 from pathlib import Path
