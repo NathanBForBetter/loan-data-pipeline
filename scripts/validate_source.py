@@ -1,3 +1,11 @@
+## Pre-ingestion quality gate inspecting csv data.
+## Validates: 
+##  - File exists and is readable.
+##  - Headers are present, nonempty, and unique.
+##  - Every data row has the same number of fields as the header.
+##  - Completely blank rows are identified.
+##  - Columns with entirely blank values are identified.
+##  - If you provide the December file as a comparison, January's schema is checked for added, removed, or renamed columns.
 
 from argparse import ArgumentParser
 from collections import Counter
