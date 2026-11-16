@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: int_latest_loan_records
+    description: Latest available reporting record for each loan.
+
+    columns:
+      - name: loan_id
+        description: Unique identifier for an individual loan.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: report_month
+        data_tests:
+          - not_null
