@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: lending_club
+    schema: main
+    description: Raw LendingClub monthly loan reports.
+
+    tables:
+      - name: raw_loans
+        description: >
+          Raw loan records loaded from monthly CSV reports.
+
+        columns:
+          - name: id
+            description: Unique identifier assigned to each loan.
+
+          - name: report_date
+            description: Date associated with the monthly source report.
+
+          - name: source_file
+            description: Original CSV filename.

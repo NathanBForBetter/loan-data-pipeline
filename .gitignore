@@ -44,3 +44,6 @@ dbt/profiles.yml
 # IDE
 .idea/
 .vscode/
+
+# Ad-hoc queries, kept on disk and out of the repo.
+scratch/
