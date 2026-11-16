@@ -1,8 +1,19 @@
+{{ config(
+    materialized='incremental',
+    unique_key=['loan_id', 'report_month'],
+    incremental_strategy='delete+insert'
+) }}
 
 WITH 
     Source AS (
         SELECT *
         FROM {{ source('lending_club', 'raw_loans') }}
+        {% if is_incremental() %}
+        WHERE report_date > (
+            SELECT MAX(report_date)
+            FROM {{ this }}
+        )
+        {% endif %}
     ),
     Renamed AS (
         SELECT
