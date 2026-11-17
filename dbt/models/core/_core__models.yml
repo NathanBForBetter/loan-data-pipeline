@@ -1,19 +1,26 @@
 version: 2
 
 models:
-  # Kimball core: two fact and three dim models.
+  # Kimball core: two facts and three dims.
   - name: fct_loan_current
     description: >
-      One row per loan key due to it being latest transactions.
+      One row per loan: its latest reported state, joined to the current
+      dim_loans version.
     data_tests:
       - assert_grain:
           arguments:
             columns:
-              - loan_key
+              - loan_id
     columns:
       - name: loan_key
-        description: Surrogate key identifying loans.
-        data_tests: [unique, not_null]
+        description: Surrogate key of the current dim_loans version.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_loans')
+                field: loan_key
       - name: state_key
         data_tests:
           - not_null
@@ -31,19 +38,26 @@ models:
 
   - name: fct_loan_monthly
     description: >
-      One row per loan key and report month.
+      One row per loan per report month (periodic snapshot fact), joined to
+      the dim_loans version that was valid in that month.
     data_tests:
       - assert_grain:
           arguments:
             columns:
-              - loan_key
+              - loan_id
               - report_month
     columns:
       - name: loan_key
-        description: Surrogate key identifying loans.
-        data_tests: [not_null]
+        description: Surrogate key of the dim_loans version valid in report_month.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_loans')
+                field: loan_key
       - name: report_month
-        data_tests: [not_null]
+        data_tests:
+          - not_null
       - name: state_key
         data_tests:
           - not_null
@@ -61,19 +75,24 @@ models:
 
   - name: dim_loans
     description: >
-      One row per current loan with a lot of descriptive dims.
+      One row per loan version (SCD Type 2, built from snap_loan_history).
+      Filter on is_current for each loan's latest attributes.
     data_tests:
-      - assert_grain:
+      - dbt_utils.unique_combination_of_columns:
           arguments:
-            columns:
-              - loan_key
-              - report_month
+            combination_of_columns:
+              - loan_id
+          config:
+            where: "is_current"
     columns:
       - name: loan_key
-        data_tests: [not_null]
+        data_tests:
+          - unique
+          - not_null
       - name: loan_id
-        data_tests: [not_null]
-  
+        data_tests:
+          - not_null
+
   - name: dim_state
     description: >
       One row per state.
@@ -87,7 +106,7 @@ models:
         data_tests: [not_null, unique]
       - name: state
         data_tests: [not_null, unique]
-  
+
   - name: dim_subgrade
     description: >
       One row per subgrade.

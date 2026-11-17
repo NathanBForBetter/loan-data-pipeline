@@ -9,7 +9,7 @@ WITH
         SELECT
             sub_grade,
             LEFT(sub_grade, 1) AS grade,
-            TRY_CAST(RIGHT(sub_grade, 1) AS INTEGER) AS subgrade_number
+            {{ try_cast_integer('RIGHT(sub_grade, 1)') }} AS subgrade_number
         FROM Subgrades
     )
 
