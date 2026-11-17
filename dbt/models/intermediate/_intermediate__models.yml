@@ -2,7 +2,9 @@ version: 2
 
 models:
   - name: int_latest_loan_records
-    description: Latest available reporting record for each loan.
+    description: >
+      Latest available reporting record for each loan, plus a row_hash used
+      by the snapshot to detect changes.
 
     columns:
       - name: loan_id
@@ -12,5 +14,10 @@ models:
           - unique
 
       - name: report_month
+        data_tests:
+          - not_null
+
+      - name: row_hash
+        description: Hash of every column in loan_tracked_columns().
         data_tests:
           - not_null
