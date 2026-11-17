@@ -2,13 +2,15 @@ version: 2
 
 sources:
   - name: lending_club
-    schema: main
-    description: Raw LendingClub monthly loan reports.
+    # DuckDB keeps raw tables in main; BigQuery keeps them in the loan_raw dataset.
+    schema: "{{ 'main' if target.type == 'duckdb' else 'loan_raw' }}"
+    description: Raw LendingClub monthly loan reports, every source column kept as text.
 
     tables:
       - name: raw_loans
         description: >
-          Raw loan records loaded from monthly CSV reports.
+          Raw loan records loaded from monthly CSV reports. Column names are
+          normalized at load time ('Unnamed: 0' becomes unnamed_0).
 
         columns:
           - name: id
@@ -19,3 +21,9 @@ sources:
 
           - name: source_file
             description: Original CSV filename.
+
+          - name: ingested_at
+            description: Load timestamp; staging uses it as its incremental watermark.
+
+      - name: ingestion_log
+        description: One row per successfully loaded file.

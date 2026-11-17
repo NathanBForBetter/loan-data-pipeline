@@ -2,7 +2,9 @@ version: 2
 
 models:
   - name: stg_loan_reports
-    description: Cleaned and standardized LendingClub loan observations.
+    description: >
+      Cleaned and typed LendingClub loan observations: one row per loan per
+      report month.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -14,6 +16,10 @@ models:
         data_tests:
           - not_null
 
+      - name: report_month
+        data_tests:
+          - not_null
+
       - name: report_date
         data_tests:
           - not_null
@@ -21,3 +27,21 @@ models:
       - name: source_file
         data_tests:
           - not_null
+
+      - name: loan_status
+        description: >
+          'Other' appears only in the January file. The test warns instead of
+          failing so the load completes and the new value stays visible.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - 'Current'
+                  - 'Fully Paid'
+                  - 'Charged Off'
+                  - 'Late (31-120 days)'
+                  - 'Late (16-30 days)'
+                  - 'In Grace Period'
+                  - 'Default'
+              config:
+                severity: warn
