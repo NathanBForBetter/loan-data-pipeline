@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: loan_change_log
+    description: >
+      Field-level change history: one row per column that changed between a
+      loan's consecutive versions, with the old value, the new value, and the
+      file that introduced the change.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - loan_id
+              - report_month
+              - column_name
+    columns:
+      - name: column_name
+        data_tests:
+          - not_null
