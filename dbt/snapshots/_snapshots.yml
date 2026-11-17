@@ -1,0 +1,25 @@
+version: 2
+
+snapshots:
+  - name: snap_loan_history
+    description: >
+      SCD Type 2 history of every loan, one row per version. dbt_valid_from
+      and dbt_valid_to are report months; dbt_valid_to IS NULL marks the
+      current version.
+    data_tests:
+      # Exactly one current version per loan.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - loan_id
+          config:
+            where: "dbt_valid_to IS NULL"
+      # A version never ends before it starts.
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "dbt_valid_to IS NULL OR dbt_valid_to > dbt_valid_from"
+    columns:
+      - name: dbt_scd_id
+        data_tests:
+          - unique
+          - not_null
