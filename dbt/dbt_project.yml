@@ -43,8 +43,3 @@ snapshots:
   loan_analytics:
     +target_schema: analytics
     +strategy: check
-
-# Seed configurations
-seeds:
-  loan_analytics:
-    +quote_columns: false

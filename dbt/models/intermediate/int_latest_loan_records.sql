@@ -1,5 +1,4 @@
 WITH RankedLoans AS (
-
     SELECT
         *,
         ROW_NUMBER() OVER (
@@ -10,7 +9,6 @@ WITH RankedLoans AS (
     FROM {{ ref('stg_loan_reports') }}
 
 )
-
 SELECT * EXCLUDE (record_rank)
 FROM RankedLoans
 WHERE record_rank = 1

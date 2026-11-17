@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  # Kimball core: two fact and three dim models.
+  - name: fct_loan_current
+    description: >
+      One row per loan key due to it being latest transactions.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - loan_key
+    columns:
+      - name: loan_key
+        description: Surrogate key identifying loans.
+        data_tests: [unique, not_null]
+      - name: state_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_state')
+                field: state_key
+      - name: sub_grade_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_subgrade')
+                field: sub_grade_key
+
+  - name: fct_loan_monthly
+    description: >
+      One row per loan key and report month.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - loan_key
+              - report_month
+    columns:
+      - name: loan_key
+        description: Surrogate key identifying loans.
+        data_tests: [not_null]
+      - name: report_month
+        data_tests: [not_null]
+      - name: state_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_state')
+                field: state_key
+      - name: sub_grade_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_subgrade')
+                field: sub_grade_key
+
+  - name: dim_loans
+    description: >
+      One row per current loan with a lot of descriptive dims.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - loan_key
+              - report_month
+    columns:
+      - name: loan_key
+        data_tests: [not_null]
+      - name: loan_id
+        data_tests: [not_null]
+  
+  - name: dim_state
+    description: >
+      One row per state.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - state_key
+    columns:
+      - name: state_key
+        data_tests: [not_null, unique]
+      - name: state
+        data_tests: [not_null, unique]
+  
+  - name: dim_subgrade
+    description: >
+      One row per subgrade.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - sub_grade_key
+    columns:
+      - name: sub_grade_key
+        data_tests: [not_null, unique]
+      - name: sub_grade
+        data_tests: [not_null, unique]
