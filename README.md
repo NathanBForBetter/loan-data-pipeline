@@ -82,6 +82,10 @@ safely. A future month only needs its file added to
 - `fct_loan_monthly`: One row per loan per report month
 - `mart_loan_change_log`: Field-level changes between
   report months
+- `mart_loans_current`: Current view, one row per loan with
+  its subgrade and state
+- `mart_loan_status_transitions`: Loans by status move
+  between report months
 
 ## Design Decisions
 
@@ -99,6 +103,9 @@ safely. A future month only needs its file added to
   file's row count before it is logged.
 - The same models run on DuckDB and BigQuery through
   cross-database macros.
+- Analyses read from the marts. The core star schema is
+kept for ad hoc questions, like a loan's month-by-month
+history.
 
 ## Data Quality Notes
 
@@ -127,10 +134,9 @@ Local development uses DuckDB.
 Production validation and execution use BigQuery.
 
 BigQuery datasets:
-
 - `loan_raw`: Raw files and ingestion log
 - `staging`, `intermediate`, `core`: dbt layers
-- `analytics`: Snapshot and change log mart
+- `analytics`: Snapshot and marts
 
 ```bash
 gcloud auth application-default login
