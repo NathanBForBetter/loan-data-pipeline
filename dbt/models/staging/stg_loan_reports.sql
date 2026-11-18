@@ -25,7 +25,7 @@ WITH
     Renamed AS (
         SELECT
             -- Identifiers
-            {{ try_cast_integer('Unnamed: 0') }} AS source_row_id,
+            {{ try_cast_integer('unnamed_0') }} AS source_row_id,
             id AS loan_id,
 
             -- Loan financials

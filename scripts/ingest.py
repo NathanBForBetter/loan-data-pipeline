@@ -104,6 +104,10 @@ def ingest_file(
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Every column is read as VARCHAR to preserve raw values.
+    source = "read_csv(?, header = true, all_varchar = true, null_padding = true)"
+    source_path = str(file_path)
+
     with duckdb.connect(str(db_path)) as conn:
         # Track successfully processed source files.
         conn.execute(
@@ -127,36 +131,21 @@ def ingest_file(
             print(f"Skipping {source_file}: already ingested.")
             return False
 
-        # Read all source columns as VARCHAR to preserve raw values.
-        conn.execute(
-            """
-            CREATE OR REPLACE TEMP TABLE _source_csv AS
-            SELECT *
-            FROM read_csv(
-                ?,
-                header = true,
-                all_varchar = true,
-                null_padding = true
-            )
-            """,
-            [str(file_path)],
-        )
-
+        # Rename to warehouse-safe names while reading ("Unnamed: 0" -> unnamed_0).
         csv_columns = [
-            row[0] for row in conn.execute("DESCRIBE _source_csv").fetchall()
+            row[0]
+            for row in conn.execute(
+                f"DESCRIBE SELECT * FROM {source}", [source_path]
+            ).fetchall()
         ]
         source_columns = normalize_columns(csv_columns)
-
-        # Use the same warehouse-safe names as the BigQuery load.
-        for old_name, new_name in zip(csv_columns, source_columns):
-            if old_name.lower() != new_name:
-                conn.execute(
-                    "ALTER TABLE _source_csv "
-                    f'RENAME COLUMN "{old_name}" TO "{new_name}"'
-                )
+        select_list = ", ".join(
+            f'"{old_name}" AS "{new_name}"'
+            for old_name, new_name in zip(csv_columns, source_columns)
+        )
 
         row_count = conn.execute(
-            "SELECT COUNT(*) FROM _source_csv"
+            f"SELECT COUNT(*) FROM {source}", [source_path]
         ).fetchone()[0]
 
         if row_count == 0:
@@ -165,13 +154,13 @@ def ingest_file(
         # The file carries its own report_month; it must match the report date.
         if "report_month" in source_columns:
             mismatched = conn.execute(
-                """
+                f"""
                 SELECT COUNT(*)
-                FROM _source_csv
+                FROM (SELECT {select_list} FROM {source})
                 WHERE TRY_CAST(report_month AS DATE)
                     IS DISTINCT FROM CAST(? AS DATE)
                 """,
-                [report_date],
+                [source_path, report_date],
             ).fetchone()[0]
 
             if mismatched:
@@ -180,50 +169,53 @@ def ingest_file(
                     f"match the report date {report_date}."
                 )
 
+        # Create the empty raw table before the transaction and insert straight
+        # from the CSV. The earlier version (temp table + CREATE TABLE ... AS
+        # inside the transaction) lost every row under DuckDB 2.0; the
+        # reconciliation check below is what caught it.
+        conn.execute(
+            f"""
+            CREATE TABLE IF NOT EXISTS raw_loans AS
+            SELECT
+                {select_list},
+                CAST(NULL AS DATE) AS report_date,
+                CAST(NULL AS VARCHAR) AS source_file,
+                CAST(NULL AS TIMESTAMPTZ) AS ingested_at
+            FROM {source}
+            LIMIT 0
+            """,
+            [source_path],
+        )
+
+        # Fail explicitly if the source schema changes.
+        target_columns = {
+            row[0].lower()
+            for row in conn.execute("DESCRIBE raw_loans").fetchall()
+        }
+        expected_columns = set(source_columns) | METADATA_COLUMNS
+
+        if target_columns != expected_columns:
+            raise ValueError(
+                "Source schema does not match raw_loans. "
+                f"Missing: {expected_columns - target_columns}. "
+                f"Unexpected: {target_columns - expected_columns}."
+            )
+
         conn.execute("BEGIN TRANSACTION")
 
         try:
-            # Create an empty raw table using the source CSV schema.
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS raw_loans AS
-                SELECT
-                    *,
-                    CAST(? AS DATE) AS report_date,
-                    ? AS source_file,
-                    CURRENT_TIMESTAMP AS ingested_at
-                FROM _source_csv
-                LIMIT 0
-                """,
-                [report_date, source_file],
-            )
-
-            # Fail explicitly if the source schema changes.
-            target_columns = {
-                row[0].lower()
-                for row in conn.execute("DESCRIBE raw_loans").fetchall()
-            }
-            expected_columns = set(source_columns) | METADATA_COLUMNS
-
-            if target_columns != expected_columns:
-                raise ValueError(
-                    "Source schema does not match raw_loans. "
-                    f"Missing: {expected_columns - target_columns}. "
-                    f"Unexpected: {target_columns - expected_columns}."
-                )
-
             # Append source rows and their ingestion metadata.
             conn.execute(
-                """
+                f"""
                 INSERT INTO raw_loans BY NAME
                 SELECT
-                    *,
+                    {select_list},
                     CAST(? AS DATE) AS report_date,
                     ? AS source_file,
                     CURRENT_TIMESTAMP AS ingested_at
-                FROM _source_csv
+                FROM {source}
                 """,
-                [report_date, source_file],
+                [report_date, source_file, source_path],
             )
 
             # Reconcile: every row in the file must have landed in raw_loans.

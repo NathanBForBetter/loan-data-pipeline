@@ -1,9 +1,9 @@
+from pathlib import Path
 
 import duckdb
 import pytest
 
-from scripts.ingest import ingest_file
-
+from scripts.ingest import ingest_file, report_date_from_filename
 
 def create_csv(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -130,3 +130,45 @@ def test_ingest_file_rejects_schema_changes(tmp_path):
 
     assert raw_count == 1
     assert log_count == 1
+
+
+
+def test_report_date_from_filename():
+    assert report_date_from_filename(Path("loan_report_20190131.csv")) == "2019-01-31"
+
+
+def test_ingest_file_rejects_report_month_mismatch(tmp_path):
+    # Arrange: the file name says January, the data says December.
+    csv_path = tmp_path / "loan_report_20190131.csv"
+    db_path = tmp_path / "test.duckdb"
+
+    create_csv(
+        csv_path,
+        "id,report_month\n"
+        "1001,2018-12-31\n",
+    )
+
+    # Act / Assert
+    with pytest.raises(ValueError, match="report_month"):
+        ingest_file(csv_path, db_path=db_path)
+
+
+def test_ingest_file_normalizes_column_names(tmp_path):
+    # Arrange
+    csv_path = tmp_path / "loan_report_20181231.csv"
+    db_path = tmp_path / "test.duckdb"
+
+    create_csv(
+        csv_path,
+        "Unnamed: 0,id,desc\n"
+        "0,1001,hello\n",
+    )
+
+    # Act
+    ingest_file(csv_path, db_path=db_path)
+
+    # Assert
+    with duckdb.connect(str(db_path)) as conn:
+        columns = [row[0] for row in conn.execute("DESCRIBE raw_loans").fetchall()]
+
+    assert columns[:3] == ["unnamed_0", "id", "desc"]

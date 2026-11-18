@@ -1,11 +1,12 @@
 version: 2
 
 models:
-  - name: loan_change_log
+  - name: mart_loan_change_log
     description: >
-      Field-level change history: one row per column that changed between a
-      loan's consecutive versions, with the old value, the new value, and the
-      file that introduced the change.
+      Field-level change history built from the core models: one row per
+      column whose value differs from the loan's previous reported month,
+      with the old and new values. Covers the columns the core models
+      expose; snap_loan_history remains the full audit trail.
     data_tests:
       - assert_grain:
           arguments:
@@ -15,5 +16,9 @@ models:
               - column_name
     columns:
       - name: column_name
+        data_tests:
+          - not_null
+      - name: previous_report_month
+        description: The loan's prior report month that the new value is compared with.
         data_tests:
           - not_null
