@@ -1,0 +1,41 @@
+"filename", "language", "Python", "pip requirements", "YAML", "Ini", "SQLite", "Log", "Markdown", "comment", "blank", "total"
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/README.md", "Markdown", 0, 0, 0, 0, 0, 0, 44, 0, 19, 63
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/analyses/changes_by_month.sql", "SQLite", 0, 0, 0, 0, 7, 0, 0, 2, 0, 9
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/analyses/loan_changes.sql", "SQLite", 0, 0, 0, 0, 8, 0, 0, 2, 0, 10
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/analyses/loan_current_state.sql", "SQLite", 0, 0, 0, 0, 22, 0, 0, 2, 0, 24
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/analyses/loan_history.sql", "SQLite", 0, 0, 0, 0, 17, 0, 0, 3, 0, 20
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/analyses/portfolio_by_risk_tier.sql", "SQLite", 0, 0, 0, 0, 10, 0, 0, 2, 0, 12
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/analyses/status_transitions.sql", "SQLite", 0, 0, 0, 0, 10, 0, 0, 2, 0, 12
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/dbt_project.yml", "YAML", 0, 0, 33, 0, 0, 0, 0, 4, 8, 45
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/macros/cross_db.sql", "SQLite", 0, 0, 0, 0, 54, 0, 0, 0, 10, 64
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/macros/generate_schema_name.sql", "SQLite", 0, 0, 0, 0, 12, 0, 0, 0, 0, 12
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/macros/loan_tracked_columns.sql", "SQLite", 0, 0, 0, 0, 64, 0, 0, 0, 0, 64
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/macros/state_fields.sql", "SQLite", 0, 0, 0, 0, 82, 0, 0, 0, 7, 89
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/core/_core__models.yml", "YAML", 0, 0, 116, 0, 0, 0, 0, 1, 5, 122
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/core/dim_loans.sql", "SQLite", 0, 0, 0, 0, 36, 0, 0, 5, 5, 46
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/core/dim_state.sql", "SQLite", 0, 0, 0, 0, 13, 0, 0, 0, 0, 13
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/core/dim_subgrade.sql", "SQLite", 0, 0, 0, 0, 29, 0, 0, 0, 1, 30
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/core/fct_loan_current.sql", "SQLite", 0, 0, 0, 0, 41, 0, 0, 5, 4, 50
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/core/fct_loan_monthly.sql", "SQLite", 0, 0, 0, 0, 36, 0, 0, 4, 2, 42
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/intermediate/_intermediate__models.yml", "YAML", 0, 0, 19, 0, 0, 0, 0, 0, 4, 23
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/intermediate/int_latest_loan_records.sql", "SQLite", 0, 0, 0, 0, 15, 0, 0, 2, 0, 17
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/marts/_marts__models.yml", "YAML", 0, 0, 23, 0, 0, 0, 0, 0, 1, 24
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/marts/mart_loan_change_log.sql", "SQLite", 0, 0, 0, 0, 104, 0, 0, 2, 4, 110
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/staging/_staging__models.yml", "YAML", 0, 0, 42, 0, 0, 0, 0, 0, 5, 47
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/staging/_staging__sources.yml", "YAML", 0, 0, 21, 0, 0, 0, 0, 1, 7, 29
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/models/staging/stg_loan_reports.sql", "SQLite", 0, 0, 0, 0, 93, 0, 0, 14, 11, 118
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/package-lock.yml", "YAML", 0, 0, 5, 0, 0, 0, 0, 0, 1, 6
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/packages.yml", "YAML", 0, 0, 3, 0, 0, 0, 0, 0, 0, 3
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/snapshots/_snapshots.yml", "YAML", 0, 0, 22, 0, 0, 0, 0, 2, 1, 25
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/snapshots/snap_loan_history.sql", "SQLite", 0, 0, 0, 0, 26, 0, 0, 0, 4, 30
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/tests/assert_no_values_lost_in_staging.sql", "SQLite", 0, 0, 0, 0, 67, 0, 0, 0, 2, 69
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/dbt/tests/generic/assert_grain.sql", "SQLite", 0, 0, 0, 0, 14, 0, 0, 0, 4, 18
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/logs/dbt.log", "Log", 0, 0, 0, 0, 0, 53, 0, 0, 6, 59
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/pytest.ini", "Ini", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/requirements.in", "pip requirements", 0, 8, 0, 0, 0, 0, 0, 4, 3, 15
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/requirements.txt", "pip requirements", 0, 1870, 0, 0, 0, 0, 0, 334, 2, 2206
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/scripts/ingest.py", "Python", 191, 0, 0, 0, 0, 0, 0, 242, 43, 476
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/scripts/run_pipeline.py", "Python", 73, 0, 0, 0, 0, 0, 0, 9, 19, 101
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/scripts/validate_source.py", "Python", 159, 0, 0, 0, 0, 0, 0, 10, 52, 221
+"/Users/nathanbeddome/PythonProjects/loan-data-pipeline/tests/test_ingestion.py", "Python", 106, 0, 0, 0, 0, 0, 0, 25, 43, 174
+"Total", "-", 529, 1878, 284, 3, 760, 53, 44, 677, 273, 4501
