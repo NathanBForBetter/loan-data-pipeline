@@ -15,7 +15,16 @@
 {%- endmacro %}
 
 {% macro bigquery__try_cast(expression, data_type) -%}
-    SAFE_CAST({{ expression }} AS {{ data_type }})
+    {%- set type_name = data_type.split('(')[0] | trim | upper -%}
+    {%- if type_name == 'NUMERIC' and '(' in data_type -%}
+        {#- BigQuery doesn't allow NUMERIC(p, s) inside CAST, so cast to
+            BIGNUMERIC (no early rounding), round to the scale, then store
+            as NUMERIC. Same values as DuckDB's DECIMAL(p, s). -#}
+        {%- set scale = data_type.split(',')[1].split(')')[0] | trim -%}
+        CAST(ROUND(SAFE_CAST({{ expression }} AS BIGNUMERIC), {{ scale }}) AS NUMERIC)
+    {%- else -%}
+        SAFE_CAST({{ expression }} AS {{ data_type }})
+    {%- endif -%}
 {%- endmacro %}
 
 {# Source integers are written like '665.0'. DuckDB casts that straight to
