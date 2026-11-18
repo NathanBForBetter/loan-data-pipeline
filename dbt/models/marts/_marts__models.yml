@@ -22,3 +22,40 @@ models:
         description: The loan's prior report month that the new value is compared with.
         data_tests:
           - not_null
+
+  - name: mart_loans_current
+    description: >
+      Current view: one row per loan with its latest reported state,
+      flattened with the current dim_loans version, subgrade and state.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - loan_id
+    columns:
+      - name: loan_status
+        data_tests:
+          - not_null
+      - name: risk_tier
+        data_tests:
+          - not_null
+      - name: state
+        data_tests:
+          - not_null
+
+  - name: mart_loan_status_transitions
+    description: >
+      Loan counts and amounts by status move between a loan's previous and
+      current report month. Covers only loans reported in that month, since
+      delta files are partial.
+    data_tests:
+      - assert_grain:
+          arguments:
+            columns:
+              - report_month
+              - previous_loan_status
+              - loan_status
+    columns:
+      - name: report_month
+        data_tests:
+          - not_null
